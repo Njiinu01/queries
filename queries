@@ -1,0 +1,93 @@
+
+// MongoDB Week 1 Assignment
+
+// Database: plp_bookstore
+// Collection: books
+
+// --------------------------
+// Task 2: Basic CRUD
+// --------------------------
+
+// Find all books in a specific genre (e.g., Fiction)
+db.books.find({ genre: "Fiction" })
+
+// Find books published after a certain year (e.g., 2015)
+db.books.find({ published_year: { $gt: 2015 } })
+
+// Find books by a specific author (e.g., "Chinua Achebe")
+db.books.find({ author: "Chinua Achebe" })
+
+// Update the price of a specific book (e.g., title = "Things Fall Apart")
+db.books.updateOne(
+  { title: "Things Fall Apart" },
+  { $set: { price: 19.99 } }
+)
+
+// Delete a book by its title (e.g., "Old Book")
+db.books.deleteOne({ title: "Old Book" })
+
+// --------------------------
+// Task 3: Advanced Queries
+// --------------------------
+
+// Find books in stock AND published after 2010
+db.books.find({ in_stock: true, published_year: { $gt: 2010 } })
+
+// Projection: return only title, author, price
+db.books.find({}, { title: 1, author: 1, price: 1, _id: 0 })
+
+// Sort books by price (ascending)
+db.books.find().sort({ price: 1 })
+
+// Sort books by price (descending)
+db.books.find().sort({ price: -1 })
+
+// Pagination: 5 books per page (example: page 2 → skip 5, limit 5)
+db.books.find().skip(5).limit(5)
+
+// --------------------------
+// Task 4: Aggregation Pipelines
+// --------------------------
+
+// Average price of books by genre
+db.books.aggregate([
+  { $group: { _id: "$genre", avgPrice: { $avg: "$price" } } }
+])
+
+// Author with the most books
+db.books.aggregate([
+  { $group: { _id: "$author", totalBooks: { $sum: 1 } } },
+  { $sort: { totalBooks: -1 } },
+  { $limit: 1 }
+])
+
+// Group books by publication decade and count them
+db.books.aggregate([
+  {
+    $group: {
+      _id: { $subtract: [ { $divide: ["$published_year", 10] }, { $mod: [{ $divide: ["$published_year", 10] }, 1] } ] },
+      count: { $sum: 1 }
+    }
+  },
+  {
+    $project: {
+      decade: { $multiply: ["$_id", 10] },
+      count: 1,
+      _id: 0
+    }
+  },
+  { $sort: { decade: 1 } }
+])
+
+// --------------------------
+// Task 5: Indexing
+// --------------------------
+
+// Create an index on title
+db.books.createIndex({ title: 1 })
+
+// Create a compound index on author and published_year
+db.books.createIndex({ author: 1, published_year: -1 })
+
+// Use explain() to analyze query performance (before/after indexing)
+db.books.find({ title: "Things Fall Apart" }).explain("executionStats")
