@@ -1,0 +1,134 @@
+// ==========================
+// insert_books.js
+// ==========================
+// Script to populate the 'books' collection in the 'plp_bookstore' database
+
+const { MongoClient } = require("mongodb");
+
+// Connection URL (change this if using MongoDB Atlas)
+const url = "mongodb://127.0.0.1:27017"; 
+const client = new MongoClient(url);
+
+async function run() {
+  try {
+    await client.connect();
+    console.log("✅ Connected to MongoDB");
+
+    const db = client.db("plp_bookstore");
+    const collection = db.collection("books");
+
+    // Sample books data
+    const books = [
+      {
+        title: "Things Fall Apart",
+        author: "Chinua Achebe",
+        genre: "Fiction",
+        published_year: 1958,
+        price: 12.99,
+        in_stock: true,
+        pages: 209,
+        publisher: "Heinemann"
+      },
+      {
+        title: "A Brief History of Time",
+        author: "Stephen Hawking",
+        genre: "Science",
+        published_year: 1988,
+        price: 15.5,
+        in_stock: true,
+        pages: 256,
+        publisher: "Bantam Books"
+      },
+      {
+        title: "The Great Gatsby",
+        author: "F. Scott Fitzgerald",
+        genre: "Classic",
+        published_year: 1925,
+        price: 10.99,
+        in_stock: false,
+        pages: 180,
+        publisher: "Scribner"
+      },
+      {
+        title: "Half of a Yellow Sun",
+        author: "Chimamanda Ngozi Adichie",
+        genre: "Historical Fiction",
+        published_year: 2006,
+        price: 14.99,
+        in_stock: true,
+        pages: 448,
+        publisher: "Knopf"
+      },
+      {
+        title: "The Pragmatic Programmer",
+        author: "Andrew Hunt",
+        genre: "Technology",
+        published_year: 1999,
+        price: 39.95,
+        in_stock: true,
+        pages: 352,
+        publisher: "Addison-Wesley"
+      },
+      {
+        title: "Clean Code",
+        author: "Robert C. Martin",
+        genre: "Technology",
+        published_year: 2008,
+        price: 42.0,
+        in_stock: true,
+        pages: 464,
+        publisher: "Prentice Hall"
+      },
+      {
+        title: "The Alchemist",
+        author: "Paulo Coelho",
+        genre: "Fiction",
+        published_year: 1988,
+        price: 9.99,
+        in_stock: true,
+        pages: 197,
+        publisher: "HarperTorch"
+      },
+      {
+        title: "Sapiens: A Brief History of Humankind",
+        author: "Yuval Noah Harari",
+        genre: "History",
+        published_year: 2011,
+        price: 18.75,
+        in_stock: false,
+        pages: 443,
+        publisher: "Harper"
+      },
+      {
+        title: "The Art of War",
+        author: "Sun Tzu",
+        genre: "Philosophy",
+        published_year: -500, // Approximate year
+        price: 7.5,
+        in_stock: true,
+        pages: 273,
+        publisher: "Penguin Classics"
+      },
+      {
+        title: "Becoming",
+        author: "Michelle Obama",
+        genre: "Biography",
+        published_year: 2018,
+        price: 20.0,
+        in_stock: true,
+        pages: 448,
+        publisher: "Crown"
+      }
+    ];
+
+    // Insert books
+    const result = await collection.insertMany(books);
+    console.log(`✅ Inserted ${result.insertedCount} books`);
+  } catch (err) {
+    console.error("❌ Error inserting books:", err);
+  } finally {
+    await client.close();
+  }
+}
+
+run();
